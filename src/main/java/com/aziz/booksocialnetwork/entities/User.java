@@ -1,64 +1,40 @@
 package com.aziz.booksocialnetwork.entities;
 
-import com.aziz.booksocialnetwork.roles.Role;
-import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import com.aziz.booksocialnetwork.dto.UserDto;
+import com.aziz.booksocialnetwork.enums.UserRole;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.security.Principal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
+@Entity
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
+@ToString
 @NoArgsConstructor
-@Entity
-@EntityListeners(AuditingEntityListener.class) // when user created and when last updated
-public class User implements UserDetails, Principal {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private String firstName;
-    private String lastName;
-    private LocalDate dateOfBirth;
-    @Column(unique = true)
+    private Long id;
     private String email;
     private String password;
-    private boolean accountLocked;
-    private boolean enabled;
-    @CreatedDate
-    @Column(nullable = false,updatable = false)
-    private LocalDateTime createdDate;
-    @LastModifiedDate
-    @Column(insertable = false)
-    private LocalDateTime lastModifiedDate;
-    @ManyToMany(fetch = FetchType.EAGER)
-    private List<Role> roles;
-    @Override
-    public String getName() {
-        return email;
-    }
+    private String name;
+    private UserRole userRole;
+    private boolean isVerified;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream()
-                .map(r->new SimpleGrantedAuthority(r.getName())).collect(Collectors.toList());
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
+        return List.of(new SimpleGrantedAuthority(userRole.name()));
     }
 
     @Override
@@ -73,7 +49,7 @@ public class User implements UserDetails, Principal {
 
     @Override
     public boolean isAccountNonLocked() {
-        return !accountLocked;
+        return true;
     }
 
     @Override
@@ -83,9 +59,14 @@ public class User implements UserDetails, Principal {
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return true;
     }
-    public String fullname(){
-        return firstName + " " + lastName;
+    public UserDto getUserDto(){
+        UserDto dto = new UserDto();
+        dto.setId(id);
+        dto.setName(name);
+        dto.setEmail(email);
+        dto.setUserRole(userRole);
+        return dto;
     }
 }
