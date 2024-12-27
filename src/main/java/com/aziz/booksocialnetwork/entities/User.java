@@ -31,6 +31,7 @@ public class User implements UserDetails {
     private String name;
     private UserRole userRole;
     private boolean isVerified;
+    private String image;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -67,6 +68,7 @@ public class User implements UserDetails {
         dto.setName(name);
         dto.setEmail(email);
         dto.setUserRole(userRole);
+        dto.setImage(image);
         return dto;
     }
 }
