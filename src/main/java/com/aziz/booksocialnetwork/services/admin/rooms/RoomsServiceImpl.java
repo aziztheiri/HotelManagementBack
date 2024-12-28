@@ -59,8 +59,17 @@ public class RoomsServiceImpl implements  RoomsService{
         return uploadResult.get("url").toString();
     }
     public RoomResponseDto getAllRooms(int pageNumber){
-        Pageable pageable = PageRequest.of(pageNumber,1);
+        Pageable pageable = PageRequest.of(pageNumber,6);
         Page<Room> roomPage= roomRepository.findAll(pageable);
+        RoomResponseDto roomResponseDto =new RoomResponseDto();
+        roomResponseDto.setPageNumber(roomPage.getPageable().getPageNumber());
+        roomResponseDto.setTotalPages(roomPage.getTotalPages());
+        roomResponseDto.setRoomDtoList(roomPage.stream().map(Room::getRoomDto).collect(Collectors.toList()));
+        return roomResponseDto;
+    }
+    public RoomResponseDto getAvailableRooms(int pageNumber){
+        Pageable pageable = PageRequest.of(pageNumber,6);
+        Page<Room> roomPage= roomRepository.findByAvailable(true,pageable);
         RoomResponseDto roomResponseDto =new RoomResponseDto();
         roomResponseDto.setPageNumber(roomPage.getPageable().getPageNumber());
         roomResponseDto.setTotalPages(roomPage.getTotalPages());
@@ -96,6 +105,14 @@ public RoomDto getRoomById(Long id){
             return true;
         }
         return false;
+    }
+    public void deleteRoom(Long id){
+        Optional<Room> optionalRoom = roomRepository.findById(id);
+        if (optionalRoom.isPresent()){
+            roomRepository.deleteById(id);
+        }else{
+            throw new EntityNotFoundException("Room not present");
+        }
     }
 
 }

@@ -66,4 +66,13 @@ return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something w
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
+    @DeleteMapping("/room/{id}")
+    public ResponseEntity<?> deleteRoom(@PathVariable Long id){
+        try {
+            roomsService.deleteRoom(id);
+            return ResponseEntity.ok(null);
+        }catch (EntityNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 }
