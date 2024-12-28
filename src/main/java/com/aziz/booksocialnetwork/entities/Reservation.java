@@ -1,5 +1,6 @@
 package com.aziz.booksocialnetwork.entities;
 
+import com.aziz.booksocialnetwork.dto.ReservationDto;
 import com.aziz.booksocialnetwork.enums.ReservationStatus;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -24,4 +25,18 @@ public class Reservation {
     @ManyToOne(fetch = FetchType.LAZY,optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
+    public ReservationDto getReservationDto(){
+        ReservationDto reservationDto = new ReservationDto();
+        reservationDto.setId(id);
+        reservationDto.setPrice(price);
+        reservationDto.setCheckInDate(checkInDate);
+        reservationDto.setCheckOutDate(checkOutDate);
+        reservationDto.setReservationStatus(reservationStatus);
+        reservationDto.setUserId(user.getId());
+        reservationDto.setUsername(user.getName());
+        reservationDto.setRoomId(room.getId());
+        reservationDto.setRoomName(room.getName());
+        reservationDto.setRoomType(room.getType());
+        return reservationDto;
+    }
 }
